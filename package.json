@@ -1,0 +1,13 @@
+{
+  "name": "zerobot",
+  "version": "1.0.0",
+  "description": "ZeroHost Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.17.0",
+    "dotenv": "^16.4.7"
+  }
+}

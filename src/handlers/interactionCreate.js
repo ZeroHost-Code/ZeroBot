@@ -1,0 +1,64 @@
+const { MessageFlags } = require("discord.js");
+const config = require("../config");
+
+module.exports = async function handleInteraction(interaction) {
+  if (!interaction.isButton()) return;
+
+  if (interaction.customId === "accept_rules") {
+    try {
+      await interaction.member.roles.add(config.acceptRoleId);
+      await interaction.reply({
+        content: "You accepted the rules. The role has been assigned to you!",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      console.error("Error adding role:", error);
+      await interaction.reply({
+        content: "An error occurred while assigning the role.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  } else if (interaction.customId === "ping_down_maintenance") {
+    try {
+      await interaction.member.roles.add(config.pingRoleId);
+      await interaction.reply({
+        content: "You will now be pinged for Down or Maintenance announcements!",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      console.error("Error adding role:", error);
+      await interaction.reply({
+        content: "An error occurred while assigning the role.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  } else if (interaction.customId === "ping_web_update") {
+    try {
+      await interaction.member.roles.add(config.webUpdateRoleId);
+      await interaction.reply({
+        content: "You will now be pinged for Web Update announcements!",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      console.error("Error adding role:", error);
+      await interaction.reply({
+        content: "An error occurred while assigning the role.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  } else if (interaction.customId === "unsubscribe_all") {
+    try {
+      await interaction.member.roles.remove([config.pingRoleId, config.webUpdateRoleId]);
+      await interaction.reply({
+        content: "You have been unsubscribed from all ping roles.",
+        flags: MessageFlags.Ephemeral,
+      });
+    } catch (error) {
+      console.error("Error removing roles:", error);
+      await interaction.reply({
+        content: "An error occurred while removing the roles.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+  }
+};
