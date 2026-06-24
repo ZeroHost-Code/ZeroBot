@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 const config = require("./src/config");
 const handleReady = require("./src/handlers/ready");
 const handleInteraction = require("./src/handlers/interactionCreate");
@@ -6,6 +6,7 @@ const handleMessage = require("./src/handlers/messageCreate");
 const handleGreeting = require("./src/handlers/greeting");
 const handleGuildMemberAdd = require("./src/handlers/guildMemberAdd");
 const handleGuildMemberRemove = require("./src/handlers/guildMemberRemove");
+const handleMessageDelete = require("./src/handlers/messageDelete");
 
 const client = new Client({
   intents: [
@@ -14,6 +15,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
   ],
+  partials: [Partials.Message, Partials.Channel],
 });
 
 process.on("unhandledRejection", (error) => {
@@ -30,5 +32,6 @@ client.on("messageCreate", handleMessage);
 client.on("messageCreate", handleGreeting);
 client.on("guildMemberAdd", handleGuildMemberAdd);
 client.on("guildMemberRemove", handleGuildMemberRemove);
+client.on("messageDelete", handleMessageDelete);
 
 client.login(config.token);
