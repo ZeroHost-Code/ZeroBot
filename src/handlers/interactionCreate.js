@@ -27,6 +27,13 @@ module.exports = async function handleInteraction(interaction) {
     return interaction.reply({ content: "This button can only be used in the ping channel.", flags: MessageFlags.Ephemeral });
   }
 
+  if (!interaction.member || !interaction.inGuild()) {
+    return interaction.reply({
+      content: "This interaction can only be used inside a server.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
   if (interaction.customId === "accept_rules") {
     try {
       await interaction.member.roles.add(config.acceptRoleId);
