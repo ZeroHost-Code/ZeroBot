@@ -1,7 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 
+const IMAGE_URL = "https://img.zero-host.org/assets/logo.png";
+
 module.exports = function buildRulesEmbed() {
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setColor(0x2f3136)
     .setTitle("ZeroHost - Server Rules")
     .setDescription("\u200b")
@@ -17,6 +19,14 @@ module.exports = function buildRulesEmbed() {
       { name: "9. No ticket abuse", value: "Do not open tickets for jokes, testing, or chatting.\nOne ticket per issue." },
       { name: "10. Protect your data", value: "Do not share passwords, tokens, or sensitive information publicly." },
       { name: "11. Breaking rules = consequences", value: "Depending on severity, staff may issue:\n• warnings\n• mutes\n• kicks\n• bans\n• service suspension" },
-    )
-    .setImage("https://img.zero-host.org/assets/logo.png");
+    );
+
+  try {
+    new URL(IMAGE_URL);
+    embed.setImage(IMAGE_URL);
+  } catch {
+    console.warn("Invalid image URL configured, skipping image.");
+  }
+
+  return embed;
 };
