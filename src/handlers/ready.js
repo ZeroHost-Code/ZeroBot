@@ -63,7 +63,7 @@ module.exports = async function handleReady(client) {
 
   client.user.setPresence({
     activities: [{ name: "🛠 In dev...", type: 0 }],
-    status: "idle",
+    status: "online",
   });
 
   await syncChannel(config.rulesChannelId, buildRulesEmbed(), buildRulesButtons(), client).catch(
