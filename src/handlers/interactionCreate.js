@@ -15,7 +15,30 @@ async function safeReply(interaction, options) {
   }
 }
 
+const commands = require("../commands");
+
 module.exports = async function handleInteraction(interaction) {
+  if (interaction.isChatInputCommand()) {
+    const command = commands.get(interaction.commandName);
+    if (!command) {
+      return safeReply(interaction, {
+        content: "Command not found.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+
+    try {
+      await command.execute(interaction);
+    } catch (error) {
+      console.error(`Error executing command ${interaction.commandName}:`, error);
+      await safeReply(interaction, {
+        content: "An error occurred while executing this command.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
+    return;
+  }
+
   if (!interaction.isButton()) return;
 
   if (cooldowns.has(interaction.user.id)) {

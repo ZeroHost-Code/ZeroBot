@@ -1,7 +1,9 @@
+const { REST, Routes } = require("discord.js");
 const config = require("../config");
 const buildRulesEmbed = require("../embed");
 const buildPingEmbed = require("../pingEmbed");
 const { buildRulesButtons, buildPingButtons } = require("../button");
+const commands = require("../commands");
 
 function embedSignature(embed) {
   const fields = (embed.fields || []).map((f) => `${f.name}|${f.value}`).join("\n");
@@ -67,6 +69,15 @@ async function syncChannel(channelId, embed, row, client) {
 
 module.exports = async function handleReady(client) {
   console.log(`Logged in as ${client.user.tag}`);
+
+  try {
+    const rest = new REST({ version: "10" }).setToken(config.token);
+    const commandData = commands.map((cmd) => cmd.data.toJSON());
+    await rest.put(Routes.applicationCommands(client.user.id), { body: commandData });
+    console.log(`Registered ${commandData.length} slash commands.`);
+  } catch (error) {
+    console.error("Failed to register slash commands:", error);
+  }
 
   client.user.setPresence({
     activities: [{ name: "🛠 In dev...", type: 0 }],
