@@ -35,26 +35,33 @@ function freshSignature(embed, row) {
 }
 
 async function syncChannel(channelId, embed, row, client) {
-  const channel = await client.channels.fetch(channelId);
-  if (!channel || !channel.isTextBased()) return;
-
-  const messages = await channel.messages.fetch({ limit: 10 });
-  const botMsg = messages.find((m) => m.author.id === client.user.id && m.embeds.length > 0);
-
-  if (botMsg) {
-    const existing = messageSignature(botMsg);
-    const fresh = freshSignature(embed, row);
-
-    if (existing === fresh) {
-      console.log(`No changes in ${channelId}, skipping.`);
+  try {
+    const channel = await client.channels.fetch(channelId);
+    if (!channel || !channel.isTextBased()) {
+      console.warn(`Channel ${channelId} not found or not text-based, skipping.`);
       return;
     }
 
-    await botMsg.edit({ embeds: [embed], components: [row] });
-    console.log(`Message edited in ${channelId}.`);
-  } else {
-    await channel.send({ embeds: [embed], components: [row] });
-    console.log(`Message sent in ${channelId}.`);
+    const messages = await channel.messages.fetch({ limit: 10 });
+    const botMsg = messages.find((m) => m.author.id === client.user.id && m.embeds.length > 0);
+
+    if (botMsg) {
+      const existing = messageSignature(botMsg);
+      const fresh = freshSignature(embed, row);
+
+      if (existing === fresh) {
+        console.log(`No changes in ${channelId}, skipping.`);
+        return;
+      }
+
+      await botMsg.edit({ embeds: [embed], components: [row] });
+      console.log(`Message edited in ${channelId}.`);
+    } else {
+      await channel.send({ embeds: [embed], components: [row] });
+      console.log(`Message sent in ${channelId}.`);
+    }
+  } catch (error) {
+    console.error(`Error syncing channel ${channelId}:`, error);
   }
 }
 
@@ -66,11 +73,6 @@ module.exports = async function handleReady(client) {
     status: "online",
   });
 
-  await syncChannel(config.rulesChannelId, buildRulesEmbed(), buildRulesButtons(), client).catch(
-    (err) => console.error("Error syncing rules channel:", err),
-  );
-
-  await syncChannel(config.pingChannelId, buildPingEmbed(), buildPingButtons(), client).catch(
-    (err) => console.error("Error syncing ping channel:", err),
-  );
+  await syncChannel(config.rulesChannelId, buildRulesEmbed(), buildRulesButtons(), client);
+  await syncChannel(config.pingChannelId, buildPingEmbed(), buildPingButtons(), client);
 };
