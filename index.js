@@ -4,6 +4,7 @@ const handleReady = require("./src/handlers/ready");
 const handleInteraction = require("./src/handlers/interactionCreate");
 const handleMessage = require("./src/handlers/messageCreate");
 const handleGreeting = require("./src/handlers/greeting");
+const handleGuildMemberAdd = require("./src/handlers/guildMemberAdd");
 
 const client = new Client({
   intents: [
@@ -26,5 +27,6 @@ client.once("ready", () => handleReady(client));
 client.on("interactionCreate", handleInteraction);
 client.on("messageCreate", handleMessage);
 client.on("messageCreate", handleGreeting);
+client.on("guildMemberAdd", handleGuildMemberAdd);
 
 client.login(config.token);
