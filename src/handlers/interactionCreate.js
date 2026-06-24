@@ -1,8 +1,20 @@
-const { MessageFlags } = require("discord.js");
+const { MessageFlags, Collection } = require("discord.js");
 const config = require("../config");
+
+const cooldowns = new Collection();
 
 module.exports = async function handleInteraction(interaction) {
   if (!interaction.isButton()) return;
+
+  if (cooldowns.has(interaction.user.id)) {
+    return interaction.reply({
+      content: "Please wait before using another button.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
+  cooldowns.set(interaction.user.id, Date.now());
+  setTimeout(() => cooldowns.delete(interaction.user.id), 3000);
 
   if (interaction.customId === "accept_rules" && interaction.channelId !== config.rulesChannelId) {
     return interaction.reply({ content: "This button can only be used in the rules channel.", flags: MessageFlags.Ephemeral });
