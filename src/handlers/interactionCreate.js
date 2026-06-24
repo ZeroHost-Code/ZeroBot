@@ -4,6 +4,17 @@ const config = require("../config");
 module.exports = async function handleInteraction(interaction) {
   if (!interaction.isButton()) return;
 
+  if (interaction.customId === "accept_rules" && interaction.channelId !== config.rulesChannelId) {
+    return interaction.reply({ content: "This button can only be used in the rules channel.", flags: MessageFlags.Ephemeral });
+  }
+
+  if (
+    (interaction.customId === "ping_down_maintenance" || interaction.customId === "ping_web_update" || interaction.customId === "unsubscribe_all") &&
+    interaction.channelId !== config.pingChannelId
+  ) {
+    return interaction.reply({ content: "This button can only be used in the ping channel.", flags: MessageFlags.Ephemeral });
+  }
+
   if (interaction.customId === "accept_rules") {
     try {
       await interaction.member.roles.add(config.acceptRoleId);
