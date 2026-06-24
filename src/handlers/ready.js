@@ -4,6 +4,7 @@ const buildRulesEmbed = require("../embed");
 const buildPingEmbed = require("../pingEmbed");
 const { buildRulesButtons, buildPingButtons } = require("../button");
 const commands = require("../commands");
+const startStatusRotation = require("../statusRotator");
 
 function embedSignature(embed) {
   const fields = (embed.fields || []).map((f) => `${f.name}|${f.value}`).join("\n");
@@ -79,10 +80,7 @@ module.exports = async function handleReady(client) {
     console.error("Failed to register slash commands:", error);
   }
 
-  client.user.setPresence({
-    activities: [{ name: "🛠 In dev...", type: 0 }],
-    status: "online",
-  });
+  startStatusRotation(client);
 
   await syncChannel(config.rulesChannelId, buildRulesEmbed(), buildRulesButtons(), client);
   await syncChannel(config.pingChannelId, buildPingEmbed(), buildPingButtons(), client);
