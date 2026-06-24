@@ -13,6 +13,14 @@ const client = new Client({
   ],
 });
 
+process.on("unhandledRejection", (error) => {
+  console.error("[FATAL] Unhandled promise rejection:", error);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("[FATAL] Uncaught exception:", error);
+});
+
 client.once("ready", () => handleReady(client));
 client.on("interactionCreate", handleInteraction);
 client.on("messageCreate", handleMessage);
