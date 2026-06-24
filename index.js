@@ -13,7 +13,7 @@ const client = new Client({
   ],
 });
 
-client.once("clientReady", () => handleReady(client));
+client.once("ready", () => handleReady(client));
 client.on("interactionCreate", handleInteraction);
 client.on("messageCreate", handleMessage);
 
