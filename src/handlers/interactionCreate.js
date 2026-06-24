@@ -3,11 +3,23 @@ const config = require("../config");
 
 const cooldowns = new Collection();
 
+async function safeReply(interaction, options) {
+  try {
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp(options);
+    } else {
+      await interaction.reply(options);
+    }
+  } catch (error) {
+    console.error("Failed to reply to interaction:", error);
+  }
+}
+
 module.exports = async function handleInteraction(interaction) {
   if (!interaction.isButton()) return;
 
   if (cooldowns.has(interaction.user.id)) {
-    return interaction.reply({
+    return safeReply(interaction, {
       content: "Please wait before using another button.",
       flags: MessageFlags.Ephemeral,
     });
@@ -17,18 +29,19 @@ module.exports = async function handleInteraction(interaction) {
   setTimeout(() => cooldowns.delete(interaction.user.id), 3000);
 
   if (interaction.customId === "accept_rules" && interaction.channelId !== config.rulesChannelId) {
-    return interaction.reply({ content: "This button can only be used in the rules channel.", flags: MessageFlags.Ephemeral });
+    return safeReply(interaction, {
+      content: "This button can only be used in the rules channel.", flags: MessageFlags.Ephemeral });
   }
 
   if (
     (interaction.customId === "ping_down_maintenance" || interaction.customId === "ping_web_update" || interaction.customId === "unsubscribe_all") &&
     interaction.channelId !== config.pingChannelId
   ) {
-    return interaction.reply({ content: "This button can only be used in the ping channel.", flags: MessageFlags.Ephemeral });
+    return safeReply(interaction, { content: "This button can only be used in the ping channel.", flags: MessageFlags.Ephemeral });
   }
 
   if (!interaction.member || !interaction.inGuild()) {
-    return interaction.reply({
+    return safeReply(interaction, {
       content: "This interaction can only be used inside a server.",
       flags: MessageFlags.Ephemeral,
     });
@@ -37,13 +50,13 @@ module.exports = async function handleInteraction(interaction) {
   if (interaction.customId === "accept_rules") {
     try {
       await interaction.member.roles.add(config.acceptRoleId);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "You accepted the rules. The role has been assigned to you!",
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       console.error("Error adding role:", error);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "An error occurred while assigning the role.",
         flags: MessageFlags.Ephemeral,
       });
@@ -51,13 +64,13 @@ module.exports = async function handleInteraction(interaction) {
   } else if (interaction.customId === "ping_down_maintenance") {
     try {
       await interaction.member.roles.add(config.pingRoleId);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "You will now be pinged for Down or Maintenance announcements!",
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       console.error("Error adding role:", error);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "An error occurred while assigning the role.",
         flags: MessageFlags.Ephemeral,
       });
@@ -65,13 +78,13 @@ module.exports = async function handleInteraction(interaction) {
   } else if (interaction.customId === "ping_web_update") {
     try {
       await interaction.member.roles.add(config.webUpdateRoleId);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "You will now be pinged for Web Update announcements!",
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       console.error("Error adding role:", error);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "An error occurred while assigning the role.",
         flags: MessageFlags.Ephemeral,
       });
@@ -79,13 +92,13 @@ module.exports = async function handleInteraction(interaction) {
   } else if (interaction.customId === "unsubscribe_all") {
     try {
       await interaction.member.roles.remove([config.pingRoleId, config.webUpdateRoleId]);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "You have been unsubscribed from all ping roles.",
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       console.error("Error removing roles:", error);
-      await interaction.reply({
+      await safeReply(interaction, {
         content: "An error occurred while removing the roles.",
         flags: MessageFlags.Ephemeral,
       });
