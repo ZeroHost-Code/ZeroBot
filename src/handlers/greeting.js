@@ -13,6 +13,8 @@ const responses = [
 ];
 
 module.exports = async function handleGreeting(message) {
+  if (message.author.bot) return;
+
   const content = message.content.trim();
 
   if (content.length > 50) return;
