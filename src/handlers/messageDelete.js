@@ -13,10 +13,10 @@ module.exports = async function handleMessageDelete(message) {
   if (!message.content && message.attachments.size === 0) return;
 
   try {
-    const channel = message.guild?.channels.cache.find(
-      (ch) => ch.isTextBased() && ch.name.includes("log"),
-    );
+    const channelId = process.env.DELETE_LOG_CHANNEL_ID;
+    if (!channelId) return;
 
+    const channel = message.guild?.channels.cache.get(channelId);
     if (!channel) return;
 
     const embed = new EmbedBuilder()
