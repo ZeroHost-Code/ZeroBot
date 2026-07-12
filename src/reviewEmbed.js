@@ -10,21 +10,12 @@ module.exports = function buildReviewEmbed() {
     .setDescription("We'd love to hear your feedback! Please leave your review using the format below:")
     .addFields(
       {
-        name: "\u200b",
-        value: [
-          "**Leave your review here:**",
-          "",
-          "⭐ Performance : ../5",
-          "⭐ Support : ../5",
-          "⭐ Security : ../5",
-          "⭐ Community : ../5",
-          "",
-          "*Replace the dots with your rating (1-5) and add any comments below!*",
-        ].join("\n"),
+        name: "Leave your review here",
+        value: "Copy the format below, rate each category from 1 to 5, and add any comments you'd like!",
       },
       {
         name: "\u200b",
-        value: "\u200b",
+        value: "```\n⭐ Performance : ../5\n⭐ Support : ../5\n⭐ Security : ../5\n⭐ Community : ../5\n```",
       },
       {
         name: "Trustpilot",
