@@ -58,10 +58,12 @@ async function syncChannel(channelId, embed, row, client) {
         return;
       }
 
-      await botMsg.edit({ embeds: [embed], components: [row] });
+      const comps = row.components?.length > 0 ? [row] : [];
+      await botMsg.edit({ embeds: [embed], components: comps });
       console.log(`Message edited in ${channelId}.`);
     } else {
-      await channel.send({ embeds: [embed], components: [row] });
+      const comps = row.components?.length > 0 ? [row] : [];
+      await channel.send({ embeds: [embed], components: comps });
       console.log(`Message sent in ${channelId}.`);
     }
   } catch (error) {
