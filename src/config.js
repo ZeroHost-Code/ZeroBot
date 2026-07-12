@@ -16,4 +16,5 @@ module.exports = {
   acceptRoleId: required("ACCEPT_ROLE_ID"),
   pingRoleId: required("PING_ROLE_ID"),
   webUpdateRoleId: required("WEB_UPDATE_ROLE_ID"),
+  reviewChannelId: required("REVIEW_CHANNEL_ID"),
 };

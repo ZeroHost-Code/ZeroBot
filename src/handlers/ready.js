@@ -2,6 +2,7 @@ const { REST, Routes } = require("discord.js");
 const config = require("../config");
 const buildRulesEmbed = require("../embed");
 const buildPingEmbed = require("../pingEmbed");
+const buildReviewEmbed = require("../reviewEmbed");
 const { buildRulesButtons, buildPingButtons } = require("../button");
 const commands = require("../commands");
 const startStatusRotation = require("../statusRotator");
@@ -84,4 +85,21 @@ module.exports = async function handleReady(client) {
 
   await syncChannel(config.rulesChannelId, buildRulesEmbed(), buildRulesButtons(), client);
   await syncChannel(config.pingChannelId, buildPingEmbed(), buildPingButtons(), client);
+
+  try {
+    const reviewChannel = await client.channels.fetch(config.reviewChannelId);
+    if (reviewChannel && reviewChannel.isTextBased()) {
+      const messages = await reviewChannel.messages.fetch({ limit: 10 });
+      const existing = messages.find((m) => m.author.id === client.user.id && m.embeds.length > 0);
+      const embed = buildReviewEmbed();
+      if (existing) {
+        await existing.edit({ embeds: [embed] });
+      } else {
+        await reviewChannel.send({ embeds: [embed] });
+      }
+      console.log(`Review channel ${config.reviewChannelId} synced.`);
+    }
+  } catch (error) {
+    console.error("Failed to sync review channel:", error);
+  }
 };
