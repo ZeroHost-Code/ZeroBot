@@ -1,11 +1,9 @@
 const config = require("../config");
+const buildReviewEmbed = require("../reviewEmbed");
 
 module.exports = async function handleReviewMessage(message) {
   if (message.author.bot) return;
   if (message.channel.id !== config.reviewChannelId) return;
-
-  const content = message.content;
-  const attachments = message.attachments;
 
   try {
     await message.delete();
@@ -15,12 +13,8 @@ module.exports = async function handleReviewMessage(message) {
   }
 
   try {
-    const payload = { content };
-    if (attachments.size > 0) {
-      payload.files = [...attachments.values()].map((a) => a.url);
-    }
-    await message.channel.send(payload);
+    await message.channel.send({ embeds: [buildReviewEmbed()] });
   } catch (error) {
-    console.error("Failed to re-send review message:", error);
+    console.error("Failed to re-send review embed:", error);
   }
 };
