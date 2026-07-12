@@ -13,8 +13,13 @@ module.exports = async function handleReviewMessage(message) {
   }
 
   try {
+    const messages = await message.channel.messages.fetch({ limit: 10 });
+    const botEmbed = messages.find((m) => m.author.id === message.client.user.id && m.embeds.length > 0);
+    if (botEmbed) {
+      await botEmbed.delete();
+    }
     await message.channel.send({ embeds: [buildReviewEmbed()] });
   } catch (error) {
-    console.error("Failed to re-send review embed:", error);
+    console.error("Failed to refresh review embed:", error);
   }
 };
